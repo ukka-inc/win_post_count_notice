@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     env: str = Field(default="")
 
     # Slack
-    slack_webhook_url: str = Field(default="")
+    slack_bot_token: str = Field(default="")
+    slack_channel_id: str = Field(default="")
 
 
 settings = Settings()
