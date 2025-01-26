@@ -21,4 +21,3 @@ win-sessionが始まる5分前に今週1週間分(前週土曜から今週金曜
 
 ### local動作確認
 - make run-local
-
