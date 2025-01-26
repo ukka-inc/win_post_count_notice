@@ -26,7 +26,7 @@ class Slack:
 {six_days_ago_date}から{now_date}のwin数は{win_count}件でした！
 18:00からのwin-session盛り上がっていきましょう！
 
-今日の本投稿後以降の駆け込みwinは除きますmm
+本投稿後以降の駆け込みwinはカウントから除きますmm
 """
 
     def fetch_post_history(self) -> list[str]:
