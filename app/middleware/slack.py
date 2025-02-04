@@ -1,7 +1,8 @@
 import datetime
+
+from settings import settings
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from settings import settings
 
 
 class Slack:
@@ -12,8 +13,9 @@ class Slack:
 
     def _gen_unix_time(self) -> float:
         now = datetime.datetime.now()
-        six_days_ago = now - datetime.timedelta(days=6)
-        return six_days_ago.timestamp()
+        modified_time = now.replace(hour=19, minute=0, second=0, microsecond=0)
+        seven_days_ago = modified_time - datetime.timedelta(days=7)
+        return seven_days_ago.timestamp()
 
     def _gen_post_message(self, win_count: int) -> str:
         now = datetime.datetime.now()
