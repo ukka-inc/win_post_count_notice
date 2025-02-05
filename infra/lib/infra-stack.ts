@@ -62,7 +62,7 @@ export class InfraStack extends cdk.Stack {
       ruleName: `${serviceName}-${ENV}-rule`,
       schedule: events.Schedule.cron({
         minute: "55",
-        hour: "9",
+        hour: "8",
         weekDay: "FRI",
       }),
     });
