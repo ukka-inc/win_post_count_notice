@@ -58,16 +58,18 @@ export class InfraStack extends cdk.Stack {
     );
 
     // Scheduler
-    const rule = new events.Rule(this, `${serviceName}-${ENV}-rule`, {
-      ruleName: `${serviceName}-${ENV}-rule`,
-      schedule: events.Schedule.cron({
-        minute: "55",
-        hour: "8",
-        weekDay: "FRI",
-      }),
-    });
+    if (ENV == "prd") {
+      const rule = new events.Rule(this, `${serviceName}-${ENV}-rule`, {
+        ruleName: `${serviceName}-${ENV}-rule`,
+        schedule: events.Schedule.cron({
+          minute: "55",
+          hour: "8",
+          weekDay: "FRI",
+        }),
+      });
 
-    // Add Target
-    rule.addTarget(new targets.LambdaFunction(winPostCountNoticeLambda));
+      // Add Target
+      rule.addTarget(new targets.LambdaFunction(winPostCountNoticeLambda));
+    }
   }
 }
