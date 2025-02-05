@@ -46,7 +46,7 @@ export class InfraStack extends cdk.Stack {
         index: "app_lambda.py",
         handler: "lambda_handler",
         memorySize: 256,
-        timeout: cdk.Duration.minutes(15),
+        timeout: cdk.Duration.minutes(3),
         environment: {
           ENV: `${ENV}`,
           SLACK_BOT_TOKEN: `${secretSlackBotToken
