@@ -12,8 +12,11 @@ class Slack:
     def __init__(self):
         self.client = WebClient(token=settings.slack_bot_token)
 
+    def _gen_now_datetime(self) -> datetime.datetime:
+        return datetime.datetime.now()
+
     def _gen_unix_time(self) -> float:
-        now = datetime.datetime.now()
+        now = self._gen_now_datetime()
         modified_time = now.replace(hour=19, minute=0, second=0, microsecond=0)
         seven_days_ago = modified_time - datetime.timedelta(days=7)
         return seven_days_ago.timestamp()
@@ -38,7 +41,7 @@ class Slack:
 
     def _gen_post_message(self, win_count: int) -> str:
         opening_message = self._gen_opening_message(win_count=win_count)
-        now = datetime.datetime.now()
+        now = self._gen_now_datetime()
         now_date = now.strftime("%Y/%m/%d")
         seven_days_ago = now - datetime.timedelta(days=7)
         seven_days_ago_date = seven_days_ago.strftime("%Y/%m/%d")
