@@ -1,0 +1,46 @@
+name: win_post_count_notice
+
+on:
+  push:
+    branches:
+    tags:
+
+env:
+  AWS_ROLE_ARN: arn:aws:iam::970113708829:role/github-actions-role
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ github.ref == 'refs/heads/feature/FV-' || github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/20') || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-1
+
+      - name: Set Env to dev
+        if: ${{ github.ref == 'refs/heads/feature/FV-' || github.ref == 'refs/heads/main' || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
+        run: echo "ENV=dev" >> $GITHUB_ENV
+
+      - name: Set Env to prd
+        if: ${{ contains(github.ref, 'refs/tags/20') }}
+        run: echo "ENV=prd" >> $GITHUB_ENV
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Deploy
+        run: make deploy
