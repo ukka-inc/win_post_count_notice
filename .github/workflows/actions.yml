@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   deploy:
-    if: ${{ github.ref == 'refs/heads/feature/FV-' || github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/20') || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
+    if: ${{ github.ref == 'refs/heads/feature/FV-630_fix_cdk_settings' || github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/20') || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           aws-region: ap-northeast-1
 
       - name: Set Env to dev
-        if: ${{ github.ref == 'refs/heads/feature/FV-' || github.ref == 'refs/heads/main' || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
+        if: ${{ github.ref == 'refs/heads/feature/FV-630_fix_cdk_settings' || github.ref == 'refs/heads/main' || contains(fromJSON('["refs/tags/dev"]'), github.ref) }}
         run: echo "ENV=dev" >> $GITHUB_ENV
 
       - name: Set Env to prd

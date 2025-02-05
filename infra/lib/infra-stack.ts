@@ -46,7 +46,7 @@ export class InfraStack extends cdk.Stack {
         index: "app_lambda.py",
         handler: "lambda_handler",
         memorySize: 256,
-        timeout: cdk.Duration.minutes(15),
+        timeout: cdk.Duration.minutes(3),
         environment: {
           ENV: `${ENV}`,
           SLACK_BOT_TOKEN: `${secretSlackBotToken
@@ -58,16 +58,18 @@ export class InfraStack extends cdk.Stack {
     );
 
     // Scheduler
-    const rule = new events.Rule(this, `${serviceName}-${ENV}-rule`, {
-      ruleName: `${serviceName}-${ENV}-rule`,
-      schedule: events.Schedule.cron({
-        minute: "55",
-        hour: "9",
-        weekDay: "FRI",
-      }),
-    });
+    if (ENV == "prd") {
+      const rule = new events.Rule(this, `${serviceName}-${ENV}-rule`, {
+        ruleName: `${serviceName}-${ENV}-rule`,
+        schedule: events.Schedule.cron({
+          minute: "55",
+          hour: "8",
+          weekDay: "FRI",
+        }),
+      });
 
-    // Add Target
-    rule.addTarget(new targets.LambdaFunction(winPostCountNoticeLambda));
+      // Add Target
+      rule.addTarget(new targets.LambdaFunction(winPostCountNoticeLambda));
+    }
   }
 }
