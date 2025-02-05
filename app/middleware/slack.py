@@ -1,5 +1,6 @@
 import datetime
 
+from repositories.time_management import gen_time_schedule
 from settings import settings
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -17,26 +18,54 @@ class Slack:
         seven_days_ago = modified_time - datetime.timedelta(days=7)
         return seven_days_ago.timestamp()
 
+    def _gen_opening_message(self, win_count: int) -> str:
+        if win_count >= 20:
+            return """
+:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
+        今週もお疲れ様でした！！！！！
+:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
+"""
+
+        if 10 <= win_count < 20:
+            return """
+:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
+        今週もお疲れ様でした！！！
+:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
+"""
+
+        if win_count < 10:
+            return "今週もお疲れ様でした！"
+
     def _gen_post_message(self, win_count: int) -> str:
+        opening_message = self._gen_opening_message(win_count=win_count)
         now = datetime.datetime.now()
         now_date = now.strftime("%Y/%m/%d")
-        six_days_ago = now - datetime.timedelta(days=6)
-        six_days_ago_date = six_days_ago.strftime("%Y/%m/%d")
+        seven_days_ago = now - datetime.timedelta(days=7)
+        seven_days_ago_date = seven_days_ago.strftime("%Y/%m/%d")
+        time_management = gen_time_schedule(post_count=win_count)
+
+        if not time_management:
+            return f"{opening_message}{seven_days_ago_date}から{now_date}の :congratulations: はありませんでした :sob:"
 
         return f"""
-今週もお疲れ様でし！
-{six_days_ago_date}から{now_date}のwin数は{win_count}件でした！
-18:00からのwin-session盛り上がっていきましょう！
+{opening_message}
+
+
+:tokiwakita: {seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
+
+1投稿あたりの共有目安時間は、{time_management['minutes']}分 {time_management['seconds']}秒です！！！
+
+18:00からのwin-session盛り上がっていきましょう :kinnikun_power:
 
 本投稿後以降の駆け込みwinはカウントから除きますmm
 """
 
     def fetch_post_history(self) -> list[str]:
-        unix_6days_ago = self._gen_unix_time()
+        unix_seven_days_ago = self._gen_unix_time()
 
         try:
             response = self.client.conversations_history(
-                oldest=unix_6days_ago,
+                oldest=unix_seven_days_ago,
                 channel=settings.slack_channel_id,
                 limit=100,
             )
