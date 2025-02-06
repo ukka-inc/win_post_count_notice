@@ -36,13 +36,13 @@ class Slack:
         time_management = gen_time_schedule(post_count=win_count)
 
         if not time_management:
-            return f"{opening_message}{seven_days_ago_date}から{now_date}の :congratulations: はありませんでした :sob:"
+            return f"{opening_message}{seven_days_ago_date} 19:00 から {now_date} の :congratulations: はありませんでした :sob:"
 
         return f"""
 {opening_message}
 
 今週も :tokiwakita:
-{seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
+{seven_days_ago_date} 19:00 から {now_date} の :congratulations: は *{win_count}件* でした！！！
 
 1投稿あたりの共有目安時間は、{time_management['minutes']}分 {time_management['seconds']}秒です！！！
 
