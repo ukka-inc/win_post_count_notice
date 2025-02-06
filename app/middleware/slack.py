@@ -12,12 +12,14 @@ class Slack:
     def __init__(self):
         self.client = WebClient(token=settings.slack_bot_token)
 
-    def _get_current_time(self) -> datetime.datetime:
+    # 年月日時間取得
+    def _get_current_datetime(self) -> datetime.datetime:
         return datetime.datetime.now()
 
+    # 1週間前の19時にunix変換
     def _gen_unix_time_seven_days_ago(self) -> float:
-        now = self._get_current_time().replace(hour=19, minute=0, second=0, microsecond=0)
-        return (now - datetime.timedelta(days=7)).timestamp()
+        modified_current_datetime = self._get_current_datetime().replace(hour=19, minute=0, second=0, microsecond=0)
+        return (modified_current_datetime - datetime.timedelta(days=7)).timestamp()
 
     def _gen_opening_message(self, win_count: int) -> str:
         messages = {
@@ -29,8 +31,8 @@ class Slack:
 
     def _gen_post_message(self, win_count: int) -> str:
         opening_message = self._gen_opening_message(win_count)
-        now_date = self._get_current_time().strftime("%Y/%m/%d")
-        seven_days_ago_date = (self._get_current_time() - datetime.timedelta(days=7)).strftime("%Y/%m/%d")
+        now_date = self._get_current_datetime().strftime("%Y/%m/%d")
+        seven_days_ago_date = (self._get_current_datetime() - datetime.timedelta(days=7)).strftime("%Y/%m/%d")
         time_management = gen_time_schedule(post_count=win_count)
 
         if not time_management:
@@ -49,6 +51,7 @@ win-session盛り上がっていきましょう :kinnikun_power:
 本投稿以降の駆け込みwinはカウントから除きますmm
 """
 
+    # 1週間の投稿取得
     def fetch_post_history(self) -> list[str]:
         unix_seven_days_ago = self._gen_unix_time_seven_days_ago()
 
