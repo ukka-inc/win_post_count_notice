@@ -25,19 +25,19 @@ class Slack:
         if win_count >= 20:
             return """
 :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
-        今週もお疲れ様でした！！！！！
-:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
+
+お疲れ様でした！！！！！
 """
 
         if 10 <= win_count < 20:
             return """
 :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
-        今週もお疲れ様でした！！！
-:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
+
+お疲れ様でした！！！
 """
 
         if win_count < 10:
-            return "今週もお疲れ様でした！"
+            return "お疲れ様でした！"
 
     def _gen_post_message(self, win_count: int) -> str:
         opening_message = self._gen_opening_message(win_count=win_count)
@@ -53,8 +53,8 @@ class Slack:
         return f"""
 {opening_message}
 
-
-:tokiwakita: {seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
+今週も :tokiwakita:
+{seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
 
 1投稿あたりの共有目安時間は、{time_management['minutes']}分 {time_management['seconds']}秒です！！！
 
