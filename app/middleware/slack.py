@@ -12,39 +12,26 @@ class Slack:
     def __init__(self):
         self.client = WebClient(token=settings.slack_bot_token)
 
-    def _gen_now_datetime(self) -> datetime.datetime:
+    def _get_current_time(self) -> datetime.datetime:
         return datetime.datetime.now()
 
-    def _gen_unix_time(self) -> float:
-        now = self._gen_now_datetime()
-        modified_time = now.replace(hour=19, minute=0, second=0, microsecond=0)
-        seven_days_ago = modified_time - datetime.timedelta(days=7)
-        return seven_days_ago.timestamp()
+    def _gen_unix_time_seven_days_ago(self) -> float:
+        now = self._get_current_time().replace(hour=19, minute=0, second=0, microsecond=0)
+        return (now - datetime.timedelta(days=7)).timestamp()
 
     def _gen_opening_message(self, win_count: int) -> str:
-        if win_count >= 20:
-            return """
-:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
-
-お疲れ様でした！！！！！
-"""
-
-        if 10 <= win_count < 20:
-            return """
-:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
-
-お疲れ様でした！！！
-"""
-
-        if win_count < 10:
-            return "お疲れ様でした！"
+        """win数に応じたオープニングメッセージを生成"""
+        messages = {
+            win_count >= 20: ":fireworks: " * 10 + "\n\nお疲れ様でした！！！！！",
+            10 <= win_count < 20: ":ukaemon: " * 10 + "\n\nお疲れ様でした！！！",
+            win_count < 10: "お疲れ様でした！",
+        }
+        return next(msg for condition, msg in messages.items() if condition)
 
     def _gen_post_message(self, win_count: int) -> str:
-        opening_message = self._gen_opening_message(win_count=win_count)
-        now = self._gen_now_datetime()
-        now_date = now.strftime("%Y/%m/%d")
-        seven_days_ago = now - datetime.timedelta(days=7)
-        seven_days_ago_date = seven_days_ago.strftime("%Y/%m/%d")
+        opening_message = self._gen_opening_message(win_count)
+        now_date = self._get_current_time().strftime("%Y/%m/%d")
+        seven_days_ago_date = (self._get_current_time() - datetime.timedelta(days=7)).strftime("%Y/%m/%d")
         time_management = gen_time_schedule(post_count=win_count)
 
         if not time_management:
@@ -64,7 +51,7 @@ class Slack:
 """
 
     def fetch_post_history(self) -> list[str]:
-        unix_seven_days_ago = self._gen_unix_time()
+        unix_seven_days_ago = self._gen_unix_time_seven_days_ago()
 
         try:
             response = self.client.conversations_history(
