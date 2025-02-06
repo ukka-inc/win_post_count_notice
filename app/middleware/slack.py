@@ -12,36 +12,27 @@ class Slack:
     def __init__(self):
         self.client = WebClient(token=settings.slack_bot_token)
 
-    def _gen_unix_time(self) -> float:
-        now = datetime.datetime.now()
-        modified_time = now.replace(hour=19, minute=0, second=0, microsecond=0)
-        seven_days_ago = modified_time - datetime.timedelta(days=7)
-        return seven_days_ago.timestamp()
+    # 年月日時間取得
+    def _get_current_datetime(self) -> datetime.datetime:
+        return datetime.datetime.now()
+
+    # 1週間前の19時にunix変換
+    def _gen_unix_time_seven_days_ago(self) -> float:
+        modified_current_datetime = self._get_current_datetime().replace(hour=19, minute=0, second=0, microsecond=0)
+        return (modified_current_datetime - datetime.timedelta(days=7)).timestamp()
 
     def _gen_opening_message(self, win_count: int) -> str:
-        if win_count >= 20:
-            return """
-:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
-        今週もお疲れ様でした！！！！！
-:fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks: :fireworks:
-"""
-
-        if 10 <= win_count < 20:
-            return """
-:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
-        今週もお疲れ様でした！！！
-:ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon: :ukaemon:
-"""
-
-        if win_count < 10:
-            return "今週もお疲れ様でした！"
+        messages = {
+            win_count >= 20: ":fireworks: " * 10 + "\n\nお疲れ様でした！！！！！",
+            10 <= win_count < 20: ":ukaemon: " * 10 + "\n\nお疲れ様でした！！！",
+            win_count < 10: "お疲れ様でした！",
+        }
+        return next(msg for condition, msg in messages.items() if condition)
 
     def _gen_post_message(self, win_count: int) -> str:
-        opening_message = self._gen_opening_message(win_count=win_count)
-        now = datetime.datetime.now()
-        now_date = now.strftime("%Y/%m/%d")
-        seven_days_ago = now - datetime.timedelta(days=7)
-        seven_days_ago_date = seven_days_ago.strftime("%Y/%m/%d")
+        opening_message = self._gen_opening_message(win_count)
+        now_date = self._get_current_datetime().strftime("%Y/%m/%d")
+        seven_days_ago_date = (self._get_current_datetime() - datetime.timedelta(days=7)).strftime("%Y/%m/%d")
         time_management = gen_time_schedule(post_count=win_count)
 
         if not time_management:
@@ -50,18 +41,19 @@ class Slack:
         return f"""
 {opening_message}
 
-
-:tokiwakita: {seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
+今週も :tokiwakita:
+{seven_days_ago_date}から{now_date}の :congratulations: は *{win_count}件* でした！！！
 
 1投稿あたりの共有目安時間は、{time_management['minutes']}分 {time_management['seconds']}秒です！！！
 
-18:00からのwin-session盛り上がっていきましょう :kinnikun_power:
+win-session盛り上がっていきましょう :kinnikun_power:
 
-本投稿後以降の駆け込みwinはカウントから除きますmm
+本投稿以降の駆け込みwinはカウントから除きますmm
 """
 
+    # 1週間の投稿取得
     def fetch_post_history(self) -> list[str]:
-        unix_seven_days_ago = self._gen_unix_time()
+        unix_seven_days_ago = self._gen_unix_time_seven_days_ago()
 
         try:
             response = self.client.conversations_history(
