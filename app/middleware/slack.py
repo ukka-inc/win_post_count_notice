@@ -44,9 +44,9 @@ class Slack:
 
 1投稿あたりの共有目安時間は、{time_management['minutes']}分 {time_management['seconds']}秒です！！！
 
-18:00からのwin-session盛り上がっていきましょう :kinnikun_power:
+win-session盛り上がっていきましょう :kinnikun_power:
 
-本投稿後以降の駆け込みwinはカウントから除きますmm
+本投稿以降の駆け込みwinはカウントから除きますmm
 """
 
     def fetch_post_history(self) -> list[str]:
