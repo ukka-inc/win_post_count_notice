@@ -20,7 +20,6 @@ class Slack:
         return (now - datetime.timedelta(days=7)).timestamp()
 
     def _gen_opening_message(self, win_count: int) -> str:
-        """win数に応じたオープニングメッセージを生成"""
         messages = {
             win_count >= 20: ":fireworks: " * 10 + "\n\nお疲れ様でした！！！！！",
             10 <= win_count < 20: ":ukaemon: " * 10 + "\n\nお疲れ様でした！！！",
